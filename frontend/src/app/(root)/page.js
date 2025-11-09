@@ -1,74 +1,74 @@
 "use client";
+import Link from "next/link";
+import { useMemo } from "react";
+import HeaderName from "@/components/HeaderName";
+import { useMainContext } from "@/context/MainContext";
 import { BsCoin } from "react-icons/bs";
 import { RiCoinsLine } from "react-icons/ri";
 import { IoCardSharp } from "react-icons/io5";
-import Link from "next/link";
-import HeaderName from "@/components/HeaderName";
-import { useMainContext } from "@/context/MainContext";
-import { FaEye,FaEyeSlash } from "react-icons/fa";
-import { useState } from "react";
+import StatCard from "./stat-card";
 
-const HomePage=()=>{
+export default function HomePage() {
+  const { user } = useMainContext();
 
-  const {user} = useMainContext()
+  const accounts = Array.isArray(user?.account_no) ? user.account_no : [];
+  const atms = Array.isArray(user?.atms) ? user.atms : [];
+  const fdAmount = typeof user?.fd_amount === "number" ? user.fd_amount : 0;
 
+  const totalAmount = useMemo(() => {
+    if (!accounts.length) return 0;
+    return accounts.map((a) => Number(a?.amount || 0)).reduce((sum, v) => sum + v, 0);
+  }, [accounts]);
 
-  const dashboard_data = [
+  const stats = [
     {
-      title:"Amount",
-      "Icon":<BsCoin className="text-6xl text-yellow-500" />,
-      "value":`₹${user.account_no.map((cur)=>cur.amount).reduce((pre,cur)=>pre+cur)}`,
-      link:'/amount'
+      title: "Amount",
+      value: totalAmount,
+      href: "/amount",
+      icon: <BsCoin className="text-4xl text-yellow-600" />,
+      accent: "from-yellow-100 to-yellow-50",
+      chip: "INR",
     },
     {
-      title:"FD Amount",
-      "Icon":<RiCoinsLine className="text-6xl text-rose-700" /> ,
-      "value":`₹${user.fd_amount}`,
-      link:"/fd-amount"
+      title: "FD Amount",
+      value: fdAmount,
+      href: "/fd-amount",
+      icon: <RiCoinsLine className="text-4xl text-rose-600" />,
+      accent: "from-rose-100 to-rose-50",
+      chip: "FD",
     },
     {
-      title:"ATM Cards",
-      "Icon":<IoCardSharp className="text-6xl text-black" />,
-      "value":`${user?.atms?.length ??0}`,
-      link:'/atm-cards'
-    }
-  ]
+      title: "ATM Cards",
+      value: atms.length,
+      href: "/atm-cards",
+      icon: <IoCardSharp className="text-4xl text-indigo-600" />,
+      accent: "from-indigo-100 to-indigo-50",
+      chip: "Cards",
+      isCurrency: false,
+    },
+  ];
 
+  return (
+    <div className="py-8 space-y-6">
+      <HeaderName />
 
-  return <>
-  <div className="py-10 flex flex-col gap-y-4 " >
-  <HeaderName/>
-      <div className="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 gap-x-3">
-
-   
-    {
-      dashboard_data.map((cur,i)=>{
-        return  <DashboardCard data={cur} key={i} />
-      })
-    }
-       </div>
-    
-  </div>
-  </>
-}
-
-export default HomePage
-
-const DashboardCard = ({data})=>{
-
-  const [isShow,setIsShow] = useState(false)
-
-  return <Link href={data.link}  className="flex items-center justify-between border py-3 px-10">
-       {data.Icon  }
-      <div className="flex flex-col gap-y-2 justify-end">
-        <p className="text-3xl font-semibold">{data.title}</p> 
-          <div className="flex items-center justify-end gap-x-2">  <h3 className="text-4xl font-bold text-end">  {isShow?data.value:``.padStart(`${data.value}`.length,`x`.repeat(`${data.value}`.length))}</h3>
-          <button onClick={(e)=>{
-            e.preventDefault()
-            e.stopPropagation()
-            setIsShow(!isShow)
-          }} className="text-2xl pt-2 text-black"> {isShow?<FaEyeSlash/>:<FaEye/>} </button> </div>
-
+      <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 xl:grid-cols-3">
+        {stats.map((s, i) => (
+          <StatCard key={i} {...s} />
+        ))}
       </div>
-  </Link>
+
+      <div className="flex flex-wrap gap-3 pt-2">
+        <Link href="/profile" className="text-rose-700 hover:underline">
+          View profile
+        </Link>
+        <Link href="/transactions" className="text-gray-700 hover:underline">
+          Recent transactions
+        </Link>
+        <Link href="/fd-amount" className="text-gray-700 hover:underline">
+          Fixed deposits
+        </Link>
+      </div>
+    </div>
+  );
 }

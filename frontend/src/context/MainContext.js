@@ -63,12 +63,19 @@ export const MainContextProvider = ({children})=>{
             toast.error(error.response.data.msg || error.message)
         } 
     }
-    const LogoutHandler = ()=>{
-        localStorage.removeItem("token")
-        setUser(null)
-        router.push("/login")
-        toast.success("Logout Success")
-    }
+    const LogoutHandler = () => {
+  try {
+    // optional: await axiosClient.post("/auth/logout"); // if you add such endpoint
+  } finally {
+    localStorage.removeItem("token");
+    // Clear any axios default header you might set elsewhere
+    // axiosClient.defaults.headers.common["Authorization"] = undefined;
+    setUser(null);
+    router.push("/login");
+    toast.success("Logout Success");
+  }
+};
+
 
 
     useEffect(()=>{
