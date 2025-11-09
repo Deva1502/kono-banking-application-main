@@ -6,7 +6,7 @@ const Logo = () => {
   return (
     <>
     <Link href={'/'}> 
-    <img src="/logo.svg" className='w-[50%] md:w-[20%] lg:w-[10%]  ' alt="" /> </Link>
+    <img src="/logo.png" className='w-[50%] md:w-[20%] lg:w-[10%]  ' alt="" /> </Link>
     </>
   )
 }

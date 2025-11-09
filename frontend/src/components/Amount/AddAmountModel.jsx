@@ -51,7 +51,7 @@ export default function AddAmountModel({id}) {
       name: "CBI Bank",
       description: "Add Money Transaction",
       callback_url: razorpayCallBackUrl(data.txn_id),
-      "image": "/logo.svg",
+      "image": "/logo.png",
       // image: { logo },
       order_id: data.order_id,
   
@@ -138,7 +138,7 @@ export default function AddAmountModel({id}) {
                   </Dialog.Title>
 
                   <div className="w-full py-3 flex justify-center items-center ">
-                                <img src="/logo.svg" alt="" className='w-1/2 mx-auto' />
+                                <img src="/logo.png" alt="" className='w-1/2 mx-auto' />
                             </div> 
 
                          <Formik onSubmit={onSubmitHandler} validationSchema={validationSchema} initialValues={initial_state}>

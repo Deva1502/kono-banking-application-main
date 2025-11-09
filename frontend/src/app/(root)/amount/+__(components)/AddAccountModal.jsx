@@ -103,7 +103,7 @@ export default function AddAccountModal() {
                     {/* forms */}
 
                     <div className="w-full py-3 flex justify-center items-center ">
-                                <img src="/logo.svg" alt="" className='w-1/2 mx-auto' />
+                                <img src="/logo.png" alt="" className='w-1/2 mx-auto' />
                             </div> 
                         <div className="py-4 bg-rose-50 px-3 flex flex-col gap-y-2">
                             <p>To Open New Account :-</p>
