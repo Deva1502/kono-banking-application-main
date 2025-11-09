@@ -19,27 +19,46 @@ export const MainContextProvider = ({children})=>{
 
     const [atm,setAtm] = useState(null)
     // to fetch user profile 
-    const fetchUserProfile = async()=>{
+    const fetchUserProfile = async () => {
+  try {
+    const token = localStorage.getItem("token") || "";
+    if (!token) return;
+    const response = await axiosClient.get("/auth/profile", {
+      headers: { Authorization: "Bearer " + token },
+    });
+    const raw = await response.data;
 
-        try {
-            const token =localStorage.getItem("token") || ''
-            if(!token) return
-            const response = await axiosClient.get('/auth/profile',{
-                headers:{
-                    'Authorization':'Bearer '+ token
-                }
-            })
-            const data  = await response.data
-            console.log(data)
-            setUser(data)
+    // Normalize arrays and numbers
+    const accounts =
+      Array.isArray(raw?.accounts)
+        ? raw.accounts
+        : Array.isArray(raw?.account_no)
+        ? raw.account_no.map((a) => ({
+            _id: a._id,
+            amount: a.amount,
+            ac_type: a.ac_type || raw?.ac_type,
+          }))
+        : [];
 
+    const atms = Array.isArray(raw?.atms) ? raw.atms : [];
+    const fd_amount = typeof raw?.fd_amount === "number" ? raw.fd_amount : 0;
 
-        } catch (error) {
-            toast.error(error.response.data.msg || error.message)
-        }finally{
-            setLoading(false)
-        }
-    }
+    const normalized = {
+      ...raw,
+      accounts,
+      account_no: accounts, // keep legacy accessor to avoid breaking pages
+      atms,
+      fd_amount,
+    };
+
+    setUser(normalized);
+  } catch (error) {
+    toast.error(error?.response?.data?.msg || error.message);
+  } finally {
+    setLoading(false);
+  }
+};
+
 
 
     const fetchATMDetails = async(id)=>{
